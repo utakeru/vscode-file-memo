@@ -1,26 +1,65 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import { NodeDependenciesProvider } from "./treeview/node_dependencies_provider";
+import { RelevantListProvider, RelevantFile } from "./treeview/relevant_list_provider";
+import { ViewColumn } from "vscode";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+export interface ISetting {
+  fileName: string;
+  memoFilePaths: string[];
+}
+
 export function activate(context: vscode.ExtensionContext) {
+  console.log('Congratulations, your extension "jarvis" is now active!');
+  let fileNameToSettingMap: { [key: string]: ISetting };
+  const uri = vscode.Uri.file(vscode.workspace.rootPath + "/.jarvisrc.json");
+  vscode.workspace.openTextDocument(uri).then((doc) => {
+    const settings: ISetting[] = JSON.parse(doc.getText());
+    fileNameToSettingMap = settings.reduce(
+      (map: { [key: string]: ISetting }, obj) => {
+        map[obj.fileName] = obj;
+        return map;
+      },
+      {}
+    );
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "jarvis" is now active!');
+    vscode.window.registerTreeDataProvider(
+      "jarvisRelevantList",
+      new RelevantListProvider(fileNameToSettingMap)
+    );
+  });
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('jarvis.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
+  context.subscriptions.push(
+    vscode.commands.registerCommand("jarvis.helloWorld", () => {
+      vscode.window.showWarningMessage("Hello VS Code from jarvis!");
+    })
+  );
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from jarvis!');
-	});
+  context.subscriptions.push(
+    vscode.commands.registerCommand("jarvis.getRelevantFiles", () => {
+      if (
+        vscode.window.activeTextEditor &&
+        fileNameToSettingMap[vscode.window.activeTextEditor?.document.fileName]
+      ) {
+        vscode.window.registerTreeDataProvider(
+          "jarvisRelevantList",
+          new RelevantListProvider(fileNameToSettingMap)
+        );
+      }
+    })
+  );
 
-	context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.commands.registerCommand("jarvis.openFile", (arg: RelevantFile) => {
+      if (vscode.window.activeTextEditor) {
+          vscode.window.showTextDocument(vscode.Uri.file(arg.path), { viewColumn: ViewColumn.Beside });
+        } else {
+          vscode.window.showErrorMessage(
+            "ファイルがありませんでした。:" + arg.label
+          );
+        }
+      }
+    })
+  );
 }
 
 // this method is called when your extension is deactivated
