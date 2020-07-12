@@ -15,6 +15,7 @@ export class RelevantListProvider
   getTreeItem(element: RelevantFile): RelevantFile {
     return element;
   }
+
   getChildren(element?: RelevantFile): RelevantFile[] {
     if (element) {
       return element.memoPaths.map((memoPath) => {
@@ -32,7 +33,7 @@ export class RelevantListProvider
       ? vscode.workspace.workspaceFolders[0].uri.path
       : "";
     return Object.entries(this.settings).map(([, value]) => {
-      // 最後のスラッシュも取り除きたいので+1
+      // 最後のスラッシュも取り除きたいので +1
       const label = value.fileName.substr(workspaceRootPath.length + 1);
       return new RelevantFile(
         label,

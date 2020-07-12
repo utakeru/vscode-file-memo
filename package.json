@@ -1,7 +1,7 @@
 {
-  "name": "jarvis",
-  "displayName": "jarvis",
-  "description": "Search for relevant documents",
+  "name": "vscode-file-memo",
+  "displayName": "vscode-file-memo",
+  "description": "Extension for linking files and memos",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.46.0"
@@ -10,38 +10,33 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:jarvis.helloWorld",
-    "onView:jarvisRelevantList"
+    "onView:vscodeFileMemoMemoList"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "jarvis.helloWorld",
-        "title": "Hello World"
+        "command": "vscodeFileMemo.openFile",
+        "title": "vscode-file-memo: Open File"
       },
       {
-        "command": "jarvis.openFile",
-        "title": "Open File"
-      },
-      {
-        "command": "jarvis.getRelevantFiles",
-        "title": "Get Files"
+        "command": "vscodeFileMemo.registerMemoFile",
+        "title": "vscode-file-memo: Link the focused file as a memo file"
       }
     ],
     "views": {
       "explorer": [
         {
-          "id": "jarvisRelevantList",
-          "name": "Jarvis"
+          "id": "vscodeFileMemoMemoList",
+          "name": "File Memo List"
         }
       ]
     },
     "menus": {
       "view/item/context": [
         {
-          "command": "jarvis.openFile",
-          "when": "view == jarvisRelevantList && viewItem == memoFile",
+          "command": "vscodeFileMemo.openFile",
+          "when": "view == vscodeFileMemoMemoList && viewItem == memoFile",
           "group": "inline"
         }
       ]
