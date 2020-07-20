@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { ISetting, isPathExists } from "../extension";
 import { RelevantListProvider } from "./relevant_list_provider";
+import * as fs from "fs";
 
 export function initRelevantListProvider() {
   let fileNameToSettingMap: { [key: string]: ISetting };
@@ -8,17 +9,16 @@ export function initRelevantListProvider() {
     vscode.workspace.rootPath + "/.vscodefilememorc.json"
   );
   if (isPathExists(settingUri.fsPath)) {
-    vscode.workspace.openTextDocument(settingUri).then((doc) => {
-      const settings: ISetting[] =
-        doc.getText() === "" ? [] : JSON.parse(doc.getText());
-      if (settings.length > 0) {
-        fileNameToSettingMap = convertSettingForTreeDataProvider_(settings);
-        vscode.window.registerTreeDataProvider(
-          "vscodeFileMemoMemoList",
-          new RelevantListProvider(fileNameToSettingMap)
-        );
-      }
-    });
+    const settings: ISetting[] = JSON.parse(
+      fs.readFileSync(settingUri.fsPath, "utf8")
+    );
+    if (settings.length > 0) {
+      fileNameToSettingMap = convertSettingForTreeDataProvider_(settings);
+      vscode.window.registerTreeDataProvider(
+        "vscodeFileMemoMemoList",
+        new RelevantListProvider(fileNameToSettingMap)
+      );
+    }
   }
 }
 

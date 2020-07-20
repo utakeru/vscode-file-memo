@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { ISetting, isPathExists } from "../extension";
+import { initRelevantListProvider } from "../treeview/init_tree_view";
 
 export function registerMemoFile() {
   const options: vscode.OpenDialogOptions = {
@@ -32,6 +33,7 @@ export function registerMemoFile() {
         JSON.stringify(settings)
       );
       vscode.window.showInformationMessage(".vscodefilememorc.json saved");
+      initRelevantListProvider();
     });
   });
 }
@@ -58,7 +60,7 @@ async function makeSettings_(
       } else {
         settings.push({
           fileName: selectedTargetFileName,
-          memoFilePaths: [],
+          memoFilePaths: fileUriPaths,
         });
       }
       return Promise.resolve(settings);

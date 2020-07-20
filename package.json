@@ -1,5 +1,7 @@
 {
   "name": "vscode-file-memo",
+  "publisher": "takeru-uchiyama",
+  "repository": "https://github.com/utakeru/vscode-file-memo",
   "displayName": "vscode-file-memo",
   "description": "Extension for linking files and memos",
   "version": "0.0.1",
