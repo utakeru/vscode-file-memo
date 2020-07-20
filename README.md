@@ -1,3 +1,3 @@
 # vscode-file-memo README
 
-TBD
+![Main usecase](./vscode-file-memo.gif)
